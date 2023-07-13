@@ -1,0 +1,384 @@
+[ 필독 ]
+
+ - 이 설명서에 있는 코드는 예시입니다. 최대한 복사하지 않고 이해하며 스스로 작성할 수 있도록 해보세요.
+ - 여기있는 설명석가 이해가 되지 않는다면 무엇이든지 질문 가능합니다. 제발 모르면 질문해주세요 1 + 1도 물어봐도 됩니다.
+ - 나만의 실험실은 기본 사원소 흙, 물, 불, 공기를 조합하여 새로운 물질을 만들어내는 게임입니다.
+   for example: 흙 + 흙 = 땅, 물 + 흙 = 진흙
+ - 조합할 수 있는 물질의 종류는 recipe.js에서 만들 수 있습니다.
+ - 이 코드에서 사용된 변수와 함수 이름은 만드는 사람 마음이지만 저는 이렇게 ~ 했다 이겁니다. ㅎㅎ
+
+
+[ 1. HTML 틀짜기 ]
+
+1. 기본으로 주어지는 사원소가 있는 테이블과 만들어진 물질을 모아놓은 도감의 섹션을 나눠야합니다.
+
+    테이블:
+
+        <div class="table">
+            <div class="element earth" onclick="addElement('흙')">흙</div>
+            <div class="element water" onclick="addElement('물')">물</div>
+            <div class="element fire" onclick="addElement('불')">불</div>
+            <div class="element air" onclick="addElement('공기')">공기</div>
+        </div>
+
+    테이블을 만들고 그 안에 흙, 물, 불, 공기 각각의 <div>를 만들어줍니다.
+
+    도감:
+
+        <div class="dic">
+            <div class="dicname">도감</div>
+                <div id="dics">
+                    <div class="dicsel" onclick="addElement('흙')">흙</div>
+                    <div class="dicsel" onclick="addElement('물')">물</div>
+                    <div class="dicsel" onclick="addElement('불')">불</div>
+                    <div class="dicsel" onclick="addElement('공기')">공기</div>
+                </div>
+        </div>
+
+    마찬가지로 도감을 만들고 도감내에 원소를 만들어줍니다.
+
+[ 2. CSS 꾸미기 ]
+
+1. 원소가 있는 테이블과 만들어진 물질이 있는 도감을 만들어줍니다.
+
+    테이블:
+
+        <style>
+
+            .table {
+                z-index: -1;
+                width: 100%;
+                height: 150px;
+                background-color: #dadada;
+                position: absolute;
+                bottom: 0;
+            }
+
+        </style>
+
+    테이블의 크기와 색과 위치는 자유입니다.
+    저는 테이블은 맨 밑에 배치시켜주고 높이는 150px 정도로 만들었습니다.
+
+    도감:
+
+        <style>
+
+            .dic {
+                position: absolute;
+                width: 500px;
+                height: 100vh;
+                right: 0;
+                background-color: #cacaca;
+            }
+
+        </style>
+
+    도감의 크기와 위치와 색은 자유입니다.
+    저는 너비는 500px으로 하고 맨 오른쪽에 배치해주었습니다.
+
+2. 원소의 크기와 모양을 정해주고 위치를 배열해봅시다.
+
+    원소의 크기와 모양:
+
+        <style>
+
+            .element {
+                position: absolute;
+                line-height: 100px;
+                background-color: #9e9e9e;
+                text-align: center;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                bottom: 25px;
+                cursor: pointer;
+            }
+
+        </style>
+
+    원소의 크기와 모양과 배경색과 테두리와 뭐시기뭐시기는 다 자유입니다.
+    저는 가로와 세로를 100px로 만들고 border-radius를 50%를 주어서 동그랗게 만들어줬습니다.
+
+    위치:
+    
+        <style>
+
+            .earth {
+                left: calc((100% - 500px) / 2 - 230px);
+            }
+
+            .water {
+                left: calc((100% - 500px) / 2 - 110px);
+            }
+
+            .fire {
+                left: calc((100% - 500px) / 2 + 10px);
+            }
+
+            .air {
+                left: calc((100% - 500px) / 2 + 130px);
+            }
+
+        </style>
+
+    원소의 위치는 자유입니다.
+    저는 오른쪽에 도감이 500px로 자리를 차지하고 있기 때문에 원소를 중앙에 배치하기 위해서 calc((100% - 500px) / 2)을 해주었습니다.
+    나머지는 세부 조정입니다.
+
+3. 그리고 도감에 만들어진 물질을 배열해봅시다.
+
+    도감에 있는 물질:
+
+        <style>
+
+            .dicsel {
+                display: inline-block;
+                line-height: 100px;
+                background-color: #9e9e9e;
+                text-align: center;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                cursor: pointer;
+                margin-right: 8px;
+                margin-left: 8px;
+                margin-bottom: 10px;
+            }
+
+        </style>
+    
+    물질의 위치와 뭐시기는 전부 자유입니다.
+    저는 세부 조정을 통해서 물질을 보기 쉽게 나열해줬습니다.
+
+[ 3. JavaScript 기능 제어하기 ]
+
+1. 우선 테이블에 있는 원소들을 눌렀을 때 원소가 추가되도록 해야합니다.
+
+    makeElement()라는 함수로 <body>에 appendChild 만들기:
+
+        <script>
+
+            function addElement(ele) {
+                document.body.appendChild(makeElement(ele));
+            }
+            
+        </script>
+        
+    HTML에 onclick="addElement(ele)"로 각각의 원소를 눌렀을 때 실행이 되도록 만들었습니다.
+
+    appendChild에 속성 추가해주기:
+
+        <script>
+
+            function makeElement(name) {
+                var element = document.createElement("div");
+                element.classList.add("elements", "draggable");
+                element.innerHTML = name;
+                // makeElementDraggable(element);
+                // if (!dictionary.includes(name)) {
+                //     document.getElementById('dics').innerHTML += `<div class="dicsel" onclick="addElement('${name}')">${name}</div>`;
+                //     dictionary.push(name);
+                // }
+                return element;
+            }
+            
+        </script>
+
+    element라는 변수에 <div>를 만드는 걸 저장해두고, 그 만든 <div>에 "elements"와 "draggable"이라는 클래스를 추가해줍니다.
+    <div>의 innerHTML은 원소의 이름이 되겠네요.
+
+    도감에 추가하기:
+
+        <script>
+
+            var dictionary = ["흙", "물", "불", "공기"]
+
+        </script>
+            
+        <script>
+
+            if (!dictionary.includes(name)) {
+                document.getElementById('dics').innerHTML += `<div class="dicsel" onclick="addElement('${name}')">${name}</div>`;
+                dictionary.push(name);
+            }
+            
+        </script>
+
+        이 코드를 makeElement()함수에 넣어주면 되겠네요.
+        처음에 dictionary에 흙, 물, 불, 공기를 저장해놨다가. 새로 만든 물질이 생겼으면 dictionary에 없겠죠. 그러니까 dictionary에 없다면 도감에 추가해줍니다.
+
+2. 그리고 추가된 원소를 잡아서 움직일 수 있어야합니다.
+
+    원소에 드래그 할 수 있는 기능 추가하기:
+
+        <script>
+
+            function makeElementDraggable(element) {
+                var isDragging = false;
+                var offset = { x: 0, y: 0 };
+
+                element.addEventListener("mousedown", handleMouseDown);
+                element.addEventListener("mouseup", handleMouseUp);
+                element.addEventListener("mousemove", handleMouseMove);
+
+                function handleMouseDown(event) {
+                    isDragging = true;
+                    offset.x = event.offsetX;
+                    offset.y = event.offsetY;
+
+                }
+
+                function handleMouseUp() {
+                    isDragging = false;
+
+                    var draggableElements = document.getElementsByClassName("draggable");
+
+                    // for (var i = 0; i < draggableElements.length; i++) {
+                    //     var otherElement = draggableElements[i];
+
+                    //     if (otherElement !== element && isHalfColliding(element, otherElement)) {
+                    //         combineElements(element, otherElement);
+                    //         return;
+                    //     }
+                    // }
+                }
+
+                function handleMouseMove(event) {
+                    if (!isDragging) return;
+
+                    var x = event.clientX - offset.x;
+                    var y = event.clientY - offset.y;
+
+                    element.style.left = x + "px";
+                    element.style.top = y + "px";
+                }
+            }
+
+        </script>
+
+        총 세 개의 이벤트가 필요합니다. 마우스를 눌렀을 때, 마우스를 뗐을 때, 마우스를 움직였을 때.
+        마우스를 눌렀을 때 isDragging의 값을 true로 바꿔주고 element의 마우스 x좌표를 offset.x에 저장하고 y좌표를 offset.y에 저장합니다.
+        마우스를 똈을 때 isDragging의 값을 false로 바꿔줍니다.
+        마우스를 움직였을 때 isDragging이 false라면 x라는 변수에 clientX 값에서 offset의 x값을 뺀 값을 저장하고 y라는 변수에 clientY 값에서 offset의 y값을 뺀 값을 저장합니다.
+        그 후 element의 style의 left 값을 x + "px"로 하고 top 값을 y + "px"로 하면 됩니다.
+
+3. 원소가 겹쳐졌을 때 새로운 물질이 만들어지는 기능을 만들어야합니다.
+
+    원소가 겹쳐진 걸 감지하는 함수:
+
+        <script>
+
+            function isHalfColliding(element1, element2) {
+                var rect1 = element1.getBoundingClientRect();
+                var rect2 = element2.getBoundingClientRect();
+
+                var halfWidth1 = rect1.width / (2 * Math.sqrt(2));
+                var halfWidth2 = rect2.width / (2 * Math.sqrt(2));
+
+                let center1 = [rect1.left + halfWidth1, rect1.top + halfWidth1]
+                let center2 = [rect2.left + halfWidth2, rect2.top + halfWidth2]
+
+                var distance = Math.sqrt((center1[0] - center2[0])**2 + (center1[1] - center2[1])**2);
+
+                return (
+                    distance <= halfWidth1 + halfWidth2
+                );
+            }
+
+        </script>
+        
+        getBoundingClientRect()라는 DOM 함수를 활용해서 element1과 element2의 위치를 구한 뒤 rect1과 rect2라는 변수에 저장합니다.
+        halfWidth1과 halfwidth2에 각각 rect1과 rect2의 값에 2√2를 나눈 값을 저장합니다.
+        그리고 center1과 center2에 element1과 element2의 중앙 위치의 값을 저장합니다.
+        distance라는 변수에 center1과 center2의 거리를 점과 점 사이의 거리를 구하는 공식 √((x1 - x2)^2 + (y1 - y2)^2)를 이용하여 구한 뒤 저장합니다.
+        그리고 distance의 값이 halfWidth1 + halfWidth2의 값보다 작거나 같으면 true 값을 반환한다.
+
+    원소가 겹쳐진 상태에서 마우스르 뗐을 때 새로운 물질이 만들어지게 하기:
+
+        <script>
+
+            for (var i = 0; i < draggableElements.length; i++) {
+                var otherElement = draggableElements[i];
+
+                    if (otherElement !== element && isHalfColliding(element, otherElement)) {
+                        combineElements(element, otherElement);
+                        return;
+                    }
+            }
+            
+        </script>
+        
+        otherElement가 element와 다르고 겹쳐져있다면 combineElements()라는 함수를 실행합니다.
+        이 코드가 handleMouseUp()안에 있으면 마우스를 뗐을 때 작동하겠네요.
+
+    combineElements()함수 작성하기:
+
+        <script>
+            
+            function combineElements(element1, element2) {
+                var combinedElement;
+
+                if (mergeEvent(element1.innerHTML, element2.innerHTML, "bool")) {
+                    combinedElement = makeElement(mergeEvent(element1.innerHTML, element2.innerHTML, "result"));
+                }
+
+                document.body.appendChild(combinedElement);
+
+                var rect1 = element1.getBoundingClientRect();
+                var rect2 = element2.getBoundingClientRect();
+
+                var combinedX = Math.min(rect1.left, rect2.left);
+                var combinedY = Math.min(rect1.top, rect2.top);
+
+                combinedElement.style.left = combinedX + "px";
+                combinedElement.style.top = combinedY + "px";
+
+                element1.remove();
+                element2.remove();
+            }
+
+        </script>
+        
+        이 함수는 element1과 element2를 결합하는 기능을 수행합니다. 결합할 때 새로운 물질을 만드는데 rect1과 rect1의 min값을 가져와서 그 위치에 새로운 물질을 만듭니다.
+        새로운 물질이 만들어졌으니까 기존의 element1과 element2는 제거해줍니다. 근데 저기 if문 좀 보세요. mergeEvent()라는 함수가 있네요. 다음에서 설명합니다.
+
+    mergeEvent()함수 작성하기:
+
+        <script>
+
+            function mergeEvent(e1, e2, m) {
+                if (m == "bool") {
+                    for (let i = 0; i < recipe.length; i++) {
+                        if ((recipe[i][0] == e1 && recipe[i][1] == e2) || (recipe[i][0] == e2 && recipe[i][1] == e1)) {
+                            return true;
+                        }    
+                    }
+                    
+                } else if (m == "result") {
+                    for (let i = 0; i < recipe.length; i++) {
+                        if ((recipe[i][0] == e1 && recipe[i][1] == e2) || (recipe[i][0] == e2 && recipe[i][1] == e1)) {
+                            return recipe[i][2];
+                        }    
+                    }
+                }
+            }
+            
+        </script>
+        
+        이건 합쳐졌을 때 무슨 물질이 나오는지 만드는 함수라고 볼 수 있습니다. recipe.js에 있는 변수를 main.js에 가져와서 제어합니다.
+
+        <script>
+
+            const recipe = [
+                ["물", "물", "많은물"],
+                ["물", "흙", "물묻은흙"],
+                ["물", "불", "뜨거운물"],
+                ["물", "공기", "거품"]
+            ]
+
+        </script>
+        
+        recipe라는 변수에 조합법 배열을 저장해놨습니다. 다시 위의 mergeEvent()를 보면 recipe의 내용물을 검사해서 존재한다면 결과를 알려줘야겠네요.
+        예를 들어서 물 + 물 = 많은물이니까 recipe의 i번째의 2번째 값을 반환합니다. 그럼 이제 이 함수가 combineElements() 안에서 잘 작동하겠네요.
+        
+    

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 실험실</title>
+    
+<link rel="stylesheet" href="main.css">
+        
+   
+</head>
+<body>
+    <div class="dic">
+        <div class="dicname"></div>
+             <div id="dics">
+                <div class="dicsel" onclick="addEIment('흙')">흙</div>
+                <div class="dicsel" onclick="addEIment('물')">물</div>
+                <div class="dicsel" onclick="addEIment('불')">불</div>
+                <div class="dicsel" onclick="addEIment('공기')">공기</div>
+             </div>    
+    </div>             
+    
+    
+    <div class="table">
+        <div class="element earth" onclick="addElement('흙')">흙</div>
+        <div class="element water" onclick="addElement('물')">물</div>
+        <div class="element fire" onclick="addElement('불')">불</div>
+        <div class="element air" onclick="addElement('공기')">공기</div>
+    </div>
+
+    <script src="main.js"></script>
+    <script src="recipe.js"></script>
+</body>
+</html>
